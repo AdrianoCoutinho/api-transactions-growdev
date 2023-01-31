@@ -24,5 +24,7 @@ export const userRoutes = () => {
 
   app.delete("/users/:userId", new UserController().delete);
 
+  app.put("/users/:userId", new UserController().update);
+
   return app;
 };

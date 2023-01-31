@@ -23,16 +23,32 @@ export class User {
     return this._cpf;
   }
 
+  public set cpf(cpf: string) {
+    this._cpf = cpf;
+  }
+
   public get nome() {
     return this._nome;
+  }
+
+  public set nome(nome: string) {
+    this._nome = nome;
   }
 
   public get email() {
     return this._email;
   }
 
+  public set email(email: string) {
+    this._email = email;
+  }
+
   public get idade() {
     return this._idade;
+  }
+
+  public set idade(idade: number) {
+    this._idade = idade;
   }
 
   public toJson() {

@@ -140,4 +140,49 @@ export class UserController {
       return ServerError.genericError(res, error);
     }
   }
+
+  public update(req: Request, res: Response) {
+    try {
+      const { userId } = req.params;
+      const { nome, cpf, email, idade } = req.body;
+      const database = new UserDatabase();
+      const updateUser = database.get(userId);
+
+      if (!userId) {
+        return RequestError.fieldNotProvided(res, "userId");
+      }
+
+      if (!updateUser) {
+        return RequestError.notFound(res, "User");
+      }
+
+      if (!nome && !cpf && !email && !idade) {
+        return RequestError.fieldNotProvided(res, "nenhum campo");
+      }
+
+      if (nome) {
+        updateUser.nome = nome;
+      }
+
+      if (cpf) {
+        updateUser.cpf = cpf;
+      }
+
+      if (email) {
+        updateUser.email = email;
+      }
+
+      if (idade) {
+        updateUser.idade = idade;
+      }
+
+      res.status(200).send({
+        ok: true,
+        message: "Usuário modificado com sucesso",
+        data: updateUser,
+      });
+    } catch (error: any) {
+      return ServerError.genericError(res, error);
+    }
+  }
 }
