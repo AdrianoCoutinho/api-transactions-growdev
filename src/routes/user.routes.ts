@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import { UserController } from "../controllers/user.controller";
 import { UserValidatorMiddleware } from "../middlewares/user-validator.middleware";
 
@@ -18,9 +18,11 @@ export const userRoutes = () => {
     new UserController().create
   );
 
-  app.get("/users", new UserController().list);
+  app.get("/users", new UserController().listFilter);
 
-  app.get("/users/:id", new UserController().get);
+  app.get("/users/:userId", new UserController().get);
+
+  app.delete("/users/:userId", new UserController().delete);
 
   return app;
 };

@@ -13,12 +13,21 @@ export class UserValidatorMiddleware {
       const { nome, cpf, email, idade } = req.body;
 
       const database = new UserDatabase();
-      const user = database.getByCpf(cpf);
+      const cpfExists = database.getByCpf(cpf);
+      const emailExists = database.getByEmail(email);
 
-      if (user) {
+      if (cpfExists) {
         return res.status(400).send({
           ok: false,
           message: "Já existe um usuário com este CPF",
+          cpf: cpf,
+        });
+      }
+
+      if (emailExists) {
+        return res.status(400).send({
+          ok: false,
+          message: "Já existe um usuário com este email",
           cpf: cpf,
         });
       }

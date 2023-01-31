@@ -10,8 +10,16 @@ export class UserDatabase {
     return Users.find((user: User) => user.id === id);
   }
 
+  public getByName(nome: string) {
+    return Users.filter((user: User) => user.nome === nome);
+  }
+
   public getByCpf(cpf: string) {
     return Users.find((user: User) => user.cpf === cpf);
+  }
+
+  public getByEmail(email: string) {
+    return Users.find((user: User) => user.email === email);
   }
 
   public create(user: User) {

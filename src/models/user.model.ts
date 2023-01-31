@@ -23,6 +23,18 @@ export class User {
     return this._cpf;
   }
 
+  public get nome() {
+    return this._nome;
+  }
+
+  public get email() {
+    return this._email;
+  }
+
+  public get idade() {
+    return this._idade;
+  }
+
   public toJson() {
     return {
       id: this._id,
@@ -31,6 +43,16 @@ export class User {
       email: this._email,
       idade: this._idade,
       transacoes: this._transactions,
+    };
+  }
+
+  public toJsonFilter() {
+    return {
+      id: this._id,
+      nome: this._nome,
+      cpf: cpfValidator.format(this._cpf.toString().padStart(11, "0")),
+      email: this._email,
+      idade: this._idade,
     };
   }
 }
