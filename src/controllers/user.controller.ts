@@ -13,11 +13,11 @@ export class UserController {
 
       const result = users.map((user) => user.toJson());
 
-      res.status(200).send({
-        ok: true,
-        message: "Usuários listados com sucesso",
-        data: result,
-      });
+      return SuccessResponse.ok(
+        res,
+        "O Usuário foi criado com sucesso",
+        result
+      );
     } catch (error: any) {
       return ServerError.genericError(res, error);
     }
@@ -34,6 +34,11 @@ export class UserController {
 
       if (nome) {
         const user = database.getByName(nome as string);
+
+        if (!user) {
+          return RequestError.notFound(res, nome.toString());
+        }
+
         let result = user.map((user) => user.toJsonFilter());
 
         return res.status(200).send({
@@ -43,7 +48,10 @@ export class UserController {
 
       if (cpf) {
         const user = database.getByCpf(cpf as string);
-        console.log(user);
+
+        if (!user) {
+          return RequestError.notFound(res, cpf.toString());
+        }
 
         return res.status(200).send({
           id: user?.id,
@@ -56,6 +64,7 @@ export class UserController {
 
       if (email) {
         const user = database.getByEmail(email as string);
+
         return res.status(200).send({
           id: user?.id,
           nome: user?.nome,
@@ -65,11 +74,7 @@ export class UserController {
         });
       }
 
-      res.status(200).send({
-        ok: true,
-        message: "Usuários listados com sucesso",
-        data: result,
-      });
+      return SuccessResponse.ok(res, "Usuário(s) obtido(s)", result);
     } catch (error: any) {
       return ServerError.genericError(res, error);
     }
@@ -87,7 +92,7 @@ export class UserController {
       return SuccessResponse.created(
         res,
         "O Usuário foi criado com sucesso",
-        user
+        user.toJson()
       );
     } catch (error: any) {
       return ServerError.genericError(res, error);
@@ -98,6 +103,10 @@ export class UserController {
     try {
       const { userId } = req.params;
 
+      if (!userId) {
+        return RequestError.fieldNotProvided(res, "userId");
+      }
+
       const database = new UserDatabase();
       const user = database.get(userId);
 
@@ -105,11 +114,7 @@ export class UserController {
         return RequestError.notFound(res, "User");
       }
 
-      res.status(200).send({
-        ok: true,
-        message: "Usuário encontrado com sucesso",
-        data: user,
-      });
+      return SuccessResponse.ok(res, "Usuário obtido", user.toJson());
     } catch (error: any) {
       return ServerError.genericError(res, error);
     }
@@ -131,11 +136,11 @@ export class UserController {
 
       database.delete(Number(userId));
 
-      res.status(200).send({
-        ok: true,
-        message: "Usuário deletado com sucesso",
-        data: deletedUser,
-      });
+      return SuccessResponse.ok(
+        res,
+        "O Usuário deletado com sucesso",
+        deletedUser
+      );
     } catch (error: any) {
       return ServerError.genericError(res, error);
     }

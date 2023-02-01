@@ -1,9 +1,10 @@
 import { v4 as createUuid } from "uuid";
 import { cpf as cpfValidator } from "cpf-cnpj-validator";
+import { Transaction } from "./transaction.model";
 
 export class User {
   private _id: string;
-  private _transactions: string[];
+  private _transactions?: Transaction[];
 
   constructor(
     private _nome: string,
@@ -12,11 +13,18 @@ export class User {
     private _idade: number
   ) {
     this._id = createUuid();
-    this._transactions = [];
   }
 
   public get id() {
     return this._id;
+  }
+
+  public get transactions() {
+    return this._transactions || [];
+  }
+
+  public set transactions(transactions: Transaction[]) {
+    this._transactions = transactions;
   }
 
   public get cpf() {

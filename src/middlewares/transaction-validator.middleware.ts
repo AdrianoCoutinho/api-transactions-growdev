@@ -3,49 +3,44 @@ import { UserDatabase } from "../database/user.database";
 import { RequestError } from "../errors/request.error";
 import { ServerError } from "../errors/server.error";
 
-export class UserValidatorMiddleware {
+export class TransactionValidatorMiddleware {
   public static validateMandatoryFields(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const { nome, cpf, email, idade } = req.body;
+      const { userId } = req.params;
+      const { title, value, type } = req.body;
 
       const database = new UserDatabase();
-      const cpfExists = database.getByCpf(cpf);
-      const emailExists = database.getByEmail(email);
+      const user = database.get(userId);
 
-      if (cpfExists) {
-        return res.status(400).send({
+      if (!userId) {
+        return RequestError.fieldNotProvided(res, "userId");
+      }
+
+      if (!user) {
+        return RequestError.notFound(res, "User");
+      }
+
+      if (!title) {
+        return RequestError.fieldNotProvided(res, "title");
+      }
+
+      if (!value) {
+        return RequestError.fieldNotProvided(res, "value");
+      }
+
+      if (!type) {
+        return RequestError.fieldNotProvided(res, "type");
+      }
+
+      if (type !== "income" && type !== "outcome") {
+        return res.status(405).send({
           ok: false,
-          message: "Já existe um usuário com este CPF",
-          cpf: cpf,
+          message: "utilize 'income' ou 'outcome como tipo de transação",
         });
-      }
-
-      if (emailExists) {
-        return res.status(400).send({
-          ok: false,
-          message: "Já existe um usuário com este email",
-          email: email,
-        });
-      }
-
-      if (!nome) {
-        return RequestError.fieldNotProvided(res, "nome");
-      }
-
-      if (!cpf) {
-        return RequestError.fieldNotProvided(res, "cpf");
-      }
-
-      if (!email) {
-        return RequestError.fieldNotProvided(res, "email");
-      }
-
-      if (!idade) {
-        return RequestError.fieldNotProvided(res, "idade");
       }
 
       next();
@@ -53,6 +48,7 @@ export class UserValidatorMiddleware {
       return ServerError.genericError(res, error);
     }
   }
+
   public static validateUserExists(
     req: Request,
     res: Response,
