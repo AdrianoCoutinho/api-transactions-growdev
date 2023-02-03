@@ -33,7 +33,14 @@ export class UserController {
 
       const result = users.map((user) => user.toJsonFilter());
 
-      if (nome && typeof nome === "string") {
+      if (nome) {
+        if (typeof nome != "string") {
+          return res.status(405).send({
+            ok: false,
+            message: "O nome precisa ser uma string",
+          });
+        }
+
         const user = database.getByName(nome as string);
 
         if (!user) {
@@ -166,6 +173,13 @@ export class UserController {
         return RequestError.fieldNotProvided(res, "nenhum campo");
       }
 
+      if (typeof nome != "string") {
+        return res.status(405).send({
+          ok: false,
+          message: "O nome precisa ser do tipo string",
+        });
+      }
+
       if (nome) {
         updateUser.nome = nome;
       }
@@ -176,6 +190,13 @@ export class UserController {
 
       if (email) {
         updateUser.email = email;
+      }
+
+      if (typeof idade != "number") {
+        return res.status(405).send({
+          ok: false,
+          message: "A idade precisa ser do tipo number",
+        });
       }
 
       if (idade) {

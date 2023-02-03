@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { UserDatabase } from "../database/user.database";
 import { RequestError } from "../errors/request.error";
 import { ServerError } from "../errors/server.error";
+import { cpf as cpfValidator } from "cpf-cnpj-validator";
 
 export class UserValidatorMiddleware {
   public static validateMandatoryFields(
@@ -16,11 +17,52 @@ export class UserValidatorMiddleware {
       const cpfExists = database.getByCpf(cpf);
       const emailExists = database.getByEmail(email);
 
+      if (!nome) {
+        return RequestError.fieldNotProvided(res, "nome");
+      }
+
+      if (typeof nome != "string") {
+        return res.status(405).send({
+          ok: false,
+          message: "O nome precisa ser do tipo string",
+        });
+      }
+
+      if (!cpf) {
+        return RequestError.fieldNotProvided(res, "cpf");
+      }
+
+      if (typeof cpf != "string") {
+        return res.status(405).send({
+          ok: false,
+          message: "O cpf precisa ser do tipo string",
+        });
+      }
+
+      if (!cpfValidator.isValid(cpf)) {
+        return res.status(400).send({
+          ok: false,
+          message: "Este CPF não é valido",
+          cpf: cpf,
+        });
+      }
+
       if (cpfExists) {
         return res.status(400).send({
           ok: false,
           message: "Já existe um usuário com este CPF",
           cpf: cpf,
+        });
+      }
+
+      if (!email) {
+        return RequestError.fieldNotProvided(res, "email");
+      }
+
+      if (typeof email != "string") {
+        return res.status(405).send({
+          ok: false,
+          message: "O email precisa ser do tipo string",
         });
       }
 
@@ -32,20 +74,15 @@ export class UserValidatorMiddleware {
         });
       }
 
-      if (!nome) {
-        return RequestError.fieldNotProvided(res, "nome");
-      }
-
-      if (!cpf) {
-        return RequestError.fieldNotProvided(res, "cpf");
-      }
-
-      if (!email) {
-        return RequestError.fieldNotProvided(res, "email");
-      }
-
       if (!idade) {
         return RequestError.fieldNotProvided(res, "idade");
+      }
+
+      if (typeof idade != "number") {
+        return res.status(405).send({
+          ok: false,
+          message: "A idade precisa ser do tipo number",
+        });
       }
 
       next();
