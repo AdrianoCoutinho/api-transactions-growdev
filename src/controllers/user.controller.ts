@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { type } from "os";
 import { UserDatabase } from "../database/user.database";
 import { RequestError } from "../errors/request.error";
 import { ServerError } from "../errors/server.error";
@@ -32,7 +33,7 @@ export class UserController {
 
       const result = users.map((user) => user.toJsonFilter());
 
-      if (nome) {
+      if (nome && typeof nome === "string") {
         const user = database.getByName(nome as string);
 
         if (!user) {
@@ -139,7 +140,7 @@ export class UserController {
       return SuccessResponse.ok(
         res,
         "O Usuário deletado com sucesso",
-        deletedUser
+        deletedUser.toJson()
       );
     } catch (error: any) {
       return ServerError.genericError(res, error);
@@ -184,7 +185,7 @@ export class UserController {
       res.status(200).send({
         ok: true,
         message: "Usuário modificado com sucesso",
-        data: updateUser,
+        data: updateUser.toJson(),
       });
     } catch (error: any) {
       return ServerError.genericError(res, error);

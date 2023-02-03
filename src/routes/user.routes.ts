@@ -61,5 +61,11 @@ export const userRoutes = () => {
     new TransactionController().delete
   );
 
+  app.all("/*", (req, res) => {
+    res.status(500).send({
+      ok: false,
+      message: "Rota inválida",
+    });
+  });
   return app;
 };

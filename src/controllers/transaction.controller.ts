@@ -140,8 +140,6 @@ export class TransactionController {
         return RequestError.notFound(res, "User");
       }
 
-      let transactions = user.transactions;
-
       const transactionFinded = user.transactions.find(
         (transaction: Transaction) => transaction.id === transactionId
       );
@@ -163,6 +161,12 @@ export class TransactionController {
       }
 
       if (type) {
+        if (type !== "income" && type !== "outcome") {
+          return res.status(405).send({
+            ok: false,
+            message: "utilize 'income' ou 'outcome como tipo de transação",
+          });
+        }
         transactionFinded.type = type;
       }
 
