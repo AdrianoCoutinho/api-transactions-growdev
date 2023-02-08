@@ -68,20 +68,19 @@ export class TransactionController {
         return RequestError.notFound(res, "User");
       }
 
-      const transactions = user.transactions;
-      let incomes = transactions.filter((transaction) => {
-        return (transaction.type = "income");
-      });
+      const incomes = user.transactions.filter(
+        (incomeTransactions) => incomeTransactions.type == "income"
+      );
 
-      let outcomes = transactions.filter((transaction) => {
-        return (transaction.type = "outcome");
-      });
+      const outcomes = user.transactions.filter(
+        (outcomeTransactions) => outcomeTransactions.type == "outcome"
+      );
 
-      let incomeResult = incomes.reduce((current, item) => {
+      const incomeResult = incomes.reduce((current, item) => {
         return current + item.value;
       }, 0);
 
-      let outcomeResult = outcomes.reduce((current, item) => {
+      const outcomeResult = outcomes.reduce((current, item) => {
         return current + item.value;
       }, 0);
 
@@ -93,7 +92,7 @@ export class TransactionController {
 
       return res.status(200).send({
         ok: true,
-        transactions: transactions,
+        transactions: user.transactions,
         balance: balance,
       });
     } catch (error: any) {

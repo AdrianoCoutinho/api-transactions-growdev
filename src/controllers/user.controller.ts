@@ -5,6 +5,7 @@ import { RequestError } from "../errors/request.error";
 import { ServerError } from "../errors/server.error";
 import { User } from "../models/user.model";
 import { SuccessResponse } from "../util/success.response";
+import { cpf as cpfValidator } from "cpf-cnpj-validator";
 
 export class UserController {
   public list(req: Request, res: Response) {
@@ -142,7 +143,9 @@ export class UserController {
         return RequestError.notFound(res, "User");
       }
 
-      database.delete(Number(userId));
+      const userIndex = database.getIndex(userId);
+
+      database.delete(userIndex);
 
       return SuccessResponse.ok(
         res,
@@ -160,6 +163,8 @@ export class UserController {
       const { nome, cpf, email, idade } = req.body;
       const database = new UserDatabase();
       const updateUser = database.get(userId);
+      const cpfExists = database.getByCpf(cpf);
+      const emailExists = database.getByEmail(email);
 
       if (!userId) {
         return RequestError.fieldNotProvided(res, "userId");
@@ -173,33 +178,97 @@ export class UserController {
         return RequestError.fieldNotProvided(res, "nenhum campo");
       }
 
-      if (typeof nome != "string") {
-        return res.status(405).send({
-          ok: false,
-          message: "O nome precisa ser do tipo string",
-        });
-      }
-
       if (nome) {
+        if (typeof nome != "string") {
+          return res.status(405).send({
+            ok: false,
+            message: "O nome precisa ser do tipo string",
+          });
+        }
+
+        if ((updateUser.nome = nome)) {
+          return res.status(409).send({
+            ok: false,
+            message: "Digite um nome diferente do atual.",
+          });
+        }
+
         updateUser.nome = nome;
       }
 
       if (cpf) {
+        if (typeof cpf != "string") {
+          return res.status(405).send({
+            ok: false,
+            message: "O cpf precisa ser do tipo string",
+          });
+        }
+
+        if ((updateUser.cpf = cpf)) {
+          return res.status(409).send({
+            ok: false,
+            message: "Digite um cpf diferente do atual.",
+          });
+        }
+
+        if (cpfExists) {
+          return res.status(400).send({
+            ok: false,
+            message: "Já existe um usuário com este CPF",
+            cpf: cpf,
+          });
+        }
+
+        if (!cpfValidator.isValid(cpf)) {
+          return res.status(400).send({
+            ok: false,
+            message: "Este CPF não é valido",
+            cpf: cpf,
+          });
+        }
         updateUser.cpf = cpf;
       }
 
       if (email) {
+        if (typeof email != "string") {
+          return res.status(405).send({
+            ok: false,
+            message: "O email precisa ser do tipo string",
+          });
+        }
+
+        if ((updateUser.email = email)) {
+          return res.status(409).send({
+            ok: false,
+            message: "Digite um email diferente do atual.",
+          });
+        }
+
+        if (emailExists) {
+          return res.status(400).send({
+            ok: false,
+            message: "Já existe um usuário com este email",
+            email: email,
+          });
+        }
+
         updateUser.email = email;
       }
 
-      if (typeof idade != "number") {
-        return res.status(405).send({
-          ok: false,
-          message: "A idade precisa ser do tipo number",
-        });
-      }
-
       if (idade) {
+        if (typeof idade != "number") {
+          return res.status(405).send({
+            ok: false,
+            message: "A idade precisa ser do tipo number",
+          });
+        }
+
+        if ((updateUser.idade = idade)) {
+          return res.status(409).send({
+            ok: false,
+            message: "Digite uma idade diferente da atual.",
+          });
+        }
         updateUser.idade = idade;
       }
 

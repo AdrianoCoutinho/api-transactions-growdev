@@ -10,6 +10,10 @@ export class UserDatabase {
     return Users.find((user: User) => user.id === id);
   }
 
+  public getIndex(id: string) {
+    return Users.findIndex((user: User) => user.id === id);
+  }
+
   public getByName(nome: string) {
     return Users.filter((user: User) => user.nome === nome);
   }
