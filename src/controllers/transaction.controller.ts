@@ -111,17 +111,20 @@ export class TransactionController {
         return RequestError.notFound(res, "User");
       }
 
-      const transactionFinded = user.transactions.find(
+      const transactionFindedIndex = user.transactions.findIndex(
         (transaction: Transaction) => transaction.id === transactionId
       );
 
-      if (!transactionFinded) {
+      if (transactionFindedIndex === -1) {
         return RequestError.notFound(res, "Transaction");
       }
 
-      user.transactions.splice(Number(transactionId), 1);
+      const deletedTransactions = user.transactions.splice(
+        transactionFindedIndex,
+        1
+      );
 
-      return SuccessResponse.ok(res, "Transação deletada", transactionFinded);
+      return SuccessResponse.ok(res, "Transação deletada", deletedTransactions);
     } catch (error: any) {
       return ServerError.genericError(res, error);
     }
@@ -161,10 +164,10 @@ export class TransactionController {
 
       if (type) {
         if (type !== "income" && type !== "outcome") {
-          return res.status(405).send({
-            ok: false,
-            message: "utilize 'income' ou 'outcome como tipo de transação",
-          });
+          return RequestError.methodNotAllowed(
+            res,
+            "utilize 'income' ou 'outcome como tipo de transação"
+          );
         }
         transactionFinded.type = type;
       }

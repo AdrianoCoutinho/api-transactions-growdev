@@ -37,10 +37,10 @@ export class TransactionValidatorMiddleware {
       }
 
       if (type !== "income" && type !== "outcome") {
-        return res.status(405).send({
-          ok: false,
-          message: "utilize 'income' ou 'outcome como tipo de transação",
-        });
+        return RequestError.methodNotAllowed(
+          res,
+          "utilize 'income' ou 'outcome como tipo de transação"
+        );
       }
 
       next();

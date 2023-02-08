@@ -22,10 +22,10 @@ export class UserValidatorMiddleware {
       }
 
       if (typeof nome != "string") {
-        return res.status(405).send({
-          ok: false,
-          message: "O nome precisa ser do tipo string",
-        });
+        return RequestError.methodNotAllowed(
+          res,
+          "O nome precisa ser do tipo string"
+        );
       }
 
       if (!cpf) {
@@ -33,10 +33,10 @@ export class UserValidatorMiddleware {
       }
 
       if (typeof cpf != "string") {
-        return res.status(405).send({
-          ok: false,
-          message: "O cpf precisa ser do tipo string",
-        });
+        return RequestError.methodNotAllowed(
+          res,
+          "O cpf precisa ser do tipo string"
+        );
       }
 
       if (!cpfValidator.isValid(cpf)) {
@@ -60,10 +60,10 @@ export class UserValidatorMiddleware {
       }
 
       if (typeof email != "string") {
-        return res.status(405).send({
-          ok: false,
-          message: "O email precisa ser do tipo string",
-        });
+        return RequestError.methodNotAllowed(
+          res,
+          "O email precisa ser do tipo string"
+        );
       }
 
       if (emailExists) {
@@ -79,10 +79,10 @@ export class UserValidatorMiddleware {
       }
 
       if (typeof idade != "number") {
-        return res.status(405).send({
-          ok: false,
-          message: "A idade precisa ser do tipo number",
-        });
+        return RequestError.methodNotAllowed(
+          res,
+          "A idade precisa ser do tipo number"
+        );
       }
 
       next();

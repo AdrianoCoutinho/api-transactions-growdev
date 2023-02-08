@@ -36,10 +36,10 @@ export class UserController {
 
       if (nome) {
         if (typeof nome != "string") {
-          return res.status(405).send({
-            ok: false,
-            message: "O nome precisa ser uma string",
-          });
+          return RequestError.methodNotAllowed(
+            res,
+            "O nome precisa ser uma string"
+          );
         }
 
         const user = database.getByName(nome as string);
@@ -180,13 +180,13 @@ export class UserController {
 
       if (nome) {
         if (typeof nome != "string") {
-          return res.status(405).send({
-            ok: false,
-            message: "O nome precisa ser do tipo string",
-          });
+          return RequestError.methodNotAllowed(
+            res,
+            "O nome precisa ser do tipo string"
+          );
         }
 
-        if ((updateUser.nome = nome)) {
+        if (nome === updateUser.nome) {
           return res.status(409).send({
             ok: false,
             message: "Digite um nome diferente do atual.",
@@ -198,13 +198,13 @@ export class UserController {
 
       if (cpf) {
         if (typeof cpf != "string") {
-          return res.status(405).send({
-            ok: false,
-            message: "O cpf precisa ser do tipo string",
-          });
+          return RequestError.methodNotAllowed(
+            res,
+            "O cpf precisa ser do tipo string"
+          );
         }
 
-        if ((updateUser.cpf = cpf)) {
+        if (cpf === updateUser.cpf) {
           return res.status(409).send({
             ok: false,
             message: "Digite um cpf diferente do atual.",
@@ -231,13 +231,13 @@ export class UserController {
 
       if (email) {
         if (typeof email != "string") {
-          return res.status(405).send({
-            ok: false,
-            message: "O email precisa ser do tipo string",
-          });
+          return RequestError.methodNotAllowed(
+            res,
+            "O email precisa ser do tipo string"
+          );
         }
 
-        if ((updateUser.email = email)) {
+        if (email === updateUser.email) {
           return res.status(409).send({
             ok: false,
             message: "Digite um email diferente do atual.",
@@ -257,13 +257,13 @@ export class UserController {
 
       if (idade) {
         if (typeof idade != "number") {
-          return res.status(405).send({
-            ok: false,
-            message: "A idade precisa ser do tipo number",
-          });
+          return RequestError.methodNotAllowed(
+            res,
+            "A idade precisa ser do tipo number"
+          );
         }
 
-        if ((updateUser.idade = idade)) {
+        if (idade === updateUser.idade) {
           return res.status(409).send({
             ok: false,
             message: "Digite uma idade diferente da atual.",
